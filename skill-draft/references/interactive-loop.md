@@ -4,7 +4,7 @@ Use this wording when surfacing findings to the user in interactive mode. In fle
 
 ## Per-finding prompt
 
-```
+```text
 [ kind ] what
   evidence: <one line>
   recommendation: <rec> (confidence: <level>)
