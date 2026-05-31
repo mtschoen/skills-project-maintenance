@@ -10,7 +10,7 @@ End-of-session cleanup for a single repo. Works in two modes:
 - **Interactive** — running in a user-facing session. Walk the checklist, research each finding, and prompt the user per item before taking action.
 - **Fleet subagent** — running under `fleet-orchestration`. Produce the same researched findings but return them to the parent as structured data. Do not prompt — the parent drives the approval loop with the user.
 
-**Relationship to the `wrap` skill:** For the per-session-hygiene portion of a maintenance pass, this skill delegates to `wrap`. PM's own checklist now covers only the rare/audit-tier items that do not belong in a session-close ritual (default-branch renames, CLAUDE/AGENTS merging, missing README/LICENSE/.gitignore, dead code, large tracked files, disk warnings). If you are running in an interactive session and the user wants a full end-of-session hygiene pass, prefer `/wrap` directly — it does the session-scoped work without PM's audit overhead.
+**Relationship to the `wrap` skill:** For the per-session-hygiene portion of a maintenance pass, this skill delegates to `wrap`. PM's own checklist now covers only the rare/audit-tier items that do not belong in a session-close ritual (default-branch renames, the agent-instruction file convention — AGENTS.md source of truth with `@AGENTS.md` import pointers, missing README/LICENSE/.gitignore, dead code, large tracked files, disk warnings, and cross-project config drift — on-save linter hook, CI, aislop gate). If you are running in an interactive session and the user wants a full end-of-session hygiene pass, prefer `/wrap` directly — it does the session-scoped work without PM's audit overhead.
 
 ## Operating principles
 
@@ -42,7 +42,14 @@ For every item the checklist returned, enrich it into a full finding. The schema
 - **Dead code:** grep for references to the symbol across the repo and the user's other projects. Don't recommend removal without evidence nothing consumes it.
 - **TODO comments:** check whether the referenced condition still holds in current code. Often the fix is already in place and only the comment remains.
 - **Stale memory:** read the memory, then verify each claim it makes against current code. If the referenced issue is fixed, recommend deletion with the commit/line that fixed it as evidence. If it's still valid, keep it.
-- **CLAUDE.md + AGENTS.md coexist:** read both. Draft the merged AGENTS.md content. Draft the one-line CLAUDE.md alias (`See AGENTS.md — this file is kept as an alias for Claude Code compatibility.`). The merged content goes to the user for approval, not straight to disk.
+- **Agent-instruction file convention** (`agents_convention` findings): the canonical layout is **AGENTS.md as the single source of truth**, with `CLAUDE.md` and `GEMINI.md` as thin **`@AGENTS.md` import pointers**. Claude Code and Gemini CLI auto-expand the `@`-import into context; a plain markdown link does NOT load, so a linked pointer is flagged for upgrade. The exact target shapes (bare pointer vs. pointer + platform-specific addendum) and the test for what counts as "platform-specific" are in `references/cross-project-config.md`. Per finding kind:
+  - `agents_source_missing` — a `CLAUDE.md`/`GEMINI.md` holds real content and no `AGENTS.md` exists. Draft: move the content into a new `AGENTS.md`, then rewrite the tool file to the `@AGENTS.md` pointer. The migrated content goes to the user for approval, not straight to disk.
+  - `agents_pointer_divergent` — `AGENTS.md` exists but the tool file has its own content. Separate the genuinely platform-specific part (Claude-Code-only / Gemini-only rules) from the shared part. Fold the shared part into `AGENTS.md`; rewrite the tool file as `@AGENTS.md` plus the platform-specific addendum below the import line. If nothing is platform-specific (the common case), it becomes a bare `@AGENTS.md`.
+  - `agents_pointer_weak_link` — the tool file points at `AGENTS.md` via a markdown link. Mechanical fix: replace the link line with `@AGENTS.md` (keep any addendum below it).
+- **Cross-project config drift** (`onsave_hook`, `ci`, `aislop` findings): a code repo missing a fleet-standard config. Each is **low confidence** — confirm the repo's languages and judge whether it warrants the config before surfacing (a tiny script repo may not need an aislop gate). Draft the fix from the canonical shape in `references/cross-project-config.md`:
+  - `onsave_hook` — no `PostToolUse` Write|Edit linter hook in `.claude/settings.json`.
+  - `ci` — no `.gitea/workflows/` or `.github/workflows/`.
+  - `aislop` — no `.aislop/config.yml` quality gate.
 
 ### 3. Interactive approval loop (interactive mode only)
 

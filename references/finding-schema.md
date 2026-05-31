@@ -8,7 +8,7 @@ Every finding surfaced by this skill (whether to the user or back to a fleet par
   "what": "<human-readable location or summary>",
   "path": "<repo-relative path, empty string if not file-specific>",
   "evidence": "<what the agent actually inspected to form its opinion>",
-  "recommendation": "delete | merge_into:<target> | keep | needs_human_judgment | rename_master_to_main | report_only",
+  "recommendation": "delete | merge_into:<target> | migrate_to_agents | setup:<thing> | keep | needs_human_judgment | rename_master_to_main | report_only",
   "confidence": "high | medium | low",
   "rationale": "<one-line 'why this recommendation'>",
   "action_on_approval": "<exact shell/edit operation the agent will run>"
@@ -16,6 +16,11 @@ Every finding surfaced by this skill (whether to the user or back to a fleet par
 ```
 
 `projdash.get_maintenance_checklist` returns partial findings — they will have `kind`, `what`, `path`, `evidence`, `recommendation`, `confidence`. The skill must fill in `rationale` and `action_on_approval` after researching.
+
+Two recommendation values draw their `action_on_approval` from `references/cross-project-config.md`:
+
+- `migrate_to_agents` — establish AGENTS.md as the source of truth and/or rewrite `CLAUDE.md`/`GEMINI.md` to the `@AGENTS.md` import-pointer form (the weak-link upgrade is a sub-case).
+- `setup:<thing>` — scaffold a fleet-standard config the repo is missing: `setup:onsave_hook`, `setup:ci`, `setup:aislop`.
 
 ## Action log entry shape
 
