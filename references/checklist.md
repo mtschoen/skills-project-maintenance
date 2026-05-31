@@ -8,6 +8,7 @@ Every item below maps to either a `projdash` query (preferred — fast + reliabl
 |---|---|---|---|
 | Default branch is `master` | `projdash.get_maintenance_checklist.default_branch` | Rename to `main` (clean tree only) | Grep for `master` in CI/README/scripts before rename |
 | TODO/FIXME/XXX | `…todo_comments` | — | Verify the referenced issue isn't already fixed |
+| Branches (unmerged) | `git branch` inspection | — | Run `git merge-base --is-ancestor <tip> <target>`; if not merged, diff first (`git diff <target>..<branch> --stat`). Generic messages ("chore: wrap session hygiene") can mask significant WIP. |
 | Agent-instruction file convention | `…agents_convention` (list) | — | AGENTS.md = source of truth; CLAUDE.md/GEMINI.md = `@AGENTS.md` import pointers. Split platform-specific from shared content; draft per `references/cross-project-config.md` |
 | On-save linter hook missing | `…onsave_hook` | — | Confirm repo languages; offer the canonical `.claude/settings.json` hook (low confidence) |
 | CI missing | `…ci` | — | Offer the Gitea/GitHub Actions lint+test workflow; defer to user on whether repo warrants CI |
