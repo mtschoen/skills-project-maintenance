@@ -17,5 +17,6 @@ Every item below maps to either a `projdash` query (preferred — fast + reliabl
 | Dead code | agent grep | — | Confirm no references anywhere in repo/fleet |
 | Accidentally tracked large files | `git ls-files` + size | — | Verify no longer needed; propose `git rm` + `.gitignore` |
 | Disk warnings | projdash disk badge | — | Report only |
+| Docs content drift (`docs_content_drift`) | agent read + code compare | — | Read each major doc surface (README, CLAUDE.md / AGENTS.md, other in-repo docs, inline doc comments) and compare claimed behavior to current code. Distinct from `agents_convention`, which validates the AGENTS.md import **shape** - this check asks whether the **content** of those files still matches current code. Low confidence by default (the agent must actually read the doc and compare it to the code). Cite the stale statement and the code that contradicts it. Use the **docs-update** skill for the per-surface check. |
 
 The `agents_convention`, `onsave_hook`, `ci`, and `aislop` checks all draft their fixes from `references/cross-project-config.md` — the canonical target shapes for fleet-wide conventions.
