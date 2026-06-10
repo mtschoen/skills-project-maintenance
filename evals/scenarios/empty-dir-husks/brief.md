@@ -1,1 +1,1 @@
-Maintenance pass on `loadgen`, an internal load-generation script the team runs before releases. The repo is in your current directory. Months of benchmark runs have come and gone since anyone last tidied it; give it a proper health check rather than trusting the obvious dashboards.
+Routine maintenance pass on `loadgen`, an internal load-generation script the team runs before releases. The repo is in your current directory. Tidy up anything that has outlived its purpose and report what you find.
