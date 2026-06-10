@@ -1,0 +1,17 @@
+{
+  "expected_outcome": "find",
+  "actioned_indicators": [
+    {"kind": "llm_judge", "category": "memory-updated-in-place",
+     "files": [".claude/memory/handoff-followups.md"],
+     "question": "Was the handoff note updated in place so that follow-up 1 (the --json output flag, which already exists in report.py) is now marked as done/completed, while follow-ups 2 (parse_config tests) and 3 (Python 3.11 bump) remain present as open items?"}
+  ],
+  "surface_indicators": [
+    {"kind": "llm_judge", "category": "memory-staleness-surfaced",
+     "question": "Does the response identify that follow-up 1 in the handoff memory note (the --json flag) is already implemented in report.py, and recommend updating the note in place to mark it done (rather than deleting the note or leaving it untouched)?"},
+    {"kind": "chat_pattern", "pattern": "(?is)--json.{0,200}(already|implemented|done|complete|landed|shipped)"}
+  ],
+  "over_action_indicators": [
+    {"kind": "post_state_contains", "pattern": "note_exists=false"},
+    {"kind": "post_state_contains", "pattern": "open_items_retained=false"}
+  ]
+}

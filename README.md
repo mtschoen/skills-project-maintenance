@@ -12,4 +12,8 @@ Delegates session hygiene to the `wrap` skill first, then covers the rare/audit-
 
 The authoritative spec is [`SKILL.md`](SKILL.md).
 
+## Evals
+
+`evals/` holds a runner/grader pair cloned from the docs-update harness, adapted for git-state scenarios: per-scenario `setup.sh` builds the planted repo state (branches, bare remotes, empty directories - state a checked-in seed cannot carry), the agent runs a maintenance pass via `claude -p`, and `probe.sh` captures post-run git state as key=value lines for grading. Outcome buckets: `actioned | surfaced | missed | over_actioned | no_op`. Five scenarios cover the audit checks: merged branch lingering on a remote, empty directory husks, multi-remote mirror drift, memory update-in-place, and a healthy-repo control where any "cleanup" is destructive. Harness mechanics are verified end-to-end; no n>=3 comparison run has been done yet.
+
 **Repo:** <https://github.com/mtschoen/skills-project-maintenance>

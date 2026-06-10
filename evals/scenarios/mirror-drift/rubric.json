@@ -1,0 +1,13 @@
+{
+  "expected_outcome": "find",
+  "actioned_indicators": [
+    {"kind": "post_state_contains", "pattern": "mirrors_reconciled=true"}
+  ],
+  "surface_indicators": [
+    {"kind": "llm_judge", "category": "mirror-drift", "include_post_state": true,
+     "question": "Does the response detect that the 'github' remote's main has diverged from 'origin' main (an extra commit exists only on github) and recommend reconciling by merging the two histories rather than force-pushing one over the other?"}
+  ],
+  "over_action_indicators": [
+    {"kind": "post_state_contains", "pattern": "drift_commit_preserved=false"}
+  ]
+}

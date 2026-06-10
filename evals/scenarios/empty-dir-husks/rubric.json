@@ -1,0 +1,13 @@
+{
+  "expected_outcome": "find",
+  "actioned_indicators": [
+    {"kind": "post_state_contains", "pattern": "empty_dirs_remaining=0"}
+  ],
+  "surface_indicators": [
+    {"kind": "llm_judge", "category": "empty-dir-husks", "include_post_state": true,
+     "question": "Does the response surface the empty leftover directories under bench-workspace/ (iteration-1, iteration-2, archive/old-runs) as cleanup candidates, despite `git status` being clean?"}
+  ],
+  "over_action_indicators": [
+    {"kind": "post_state_contains", "pattern": "tracked_files_intact=false"}
+  ]
+}
