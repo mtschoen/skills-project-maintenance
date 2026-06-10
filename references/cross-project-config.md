@@ -1,12 +1,12 @@
 # Cross-project configuration conventions
 
 The canonical *target shapes* for the fleet-wide conventions PM checks. When a
-`projdash.get_maintenance_checklist` finding points here, use these as the
-draft you bring to the user — never apply straight to disk.
+project-tracker `get_maintenance_checklist` finding points here, use these as
+the draft you bring to the user — never apply straight to disk.
 
 This list grows. **When a new cross-project convention is adopted, add its
-target shape here AND a detection check in projdash
-(`src/projdash/scanner/checklist.py`) so PM surfaces drift automatically.**
+target shape here AND a detection check in project-tracker's checklist
+scanner so PM surfaces drift automatically.**
 
 ---
 
@@ -79,8 +79,8 @@ AGENTS.md). Canonical ruff + shellcheck form:
 }
 ```
 
-Reference implementation: `~/schoen-claude-status/.claude/settings.json` (adds an
-aislop second hook). **Pin the aislop binary version in a hook — never
+Repos with an aislop gate add a second hook entry of the same shape that runs
+the pinned aislop binary. **Pin the aislop binary version in a hook — never
 `@latest`** (a hook runs on every edit and `@latest` does a network check each
 time). Tailor the `case` arms to the repo's actual languages.
 
@@ -132,6 +132,6 @@ diff-only mode.
 
 ## Full detail
 
-- `~/.claude/notes/idioms_linters.md` — the three-tier lint model + aislop section.
 - A repo's own `LINTER-SETUP.md` — the per-repo survey output, when present.
-- projdash `CLAUDE.md` (the aislop gate section) — fleet aislop invocation rules.
+- The aislop section of the user's global `CLAUDE.md` - install rules and the
+  pinned version.

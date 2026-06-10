@@ -15,7 +15,7 @@ Every finding surfaced by this skill (whether to the user or back to a fleet par
 }
 ```
 
-`projdash.get_maintenance_checklist` returns partial findings — they will have `kind`, `what`, `path`, `evidence`, `recommendation`, `confidence`. The skill must fill in `rationale` and `action_on_approval` after researching.
+project-tracker's `get_maintenance_checklist` returns partial findings — they will have `kind`, `what`, `path`, `evidence`, `recommendation`, `confidence`. The skill must fill in `rationale` and `action_on_approval` after researching.
 
 Two recommendation values draw their `action_on_approval` from `references/cross-project-config.md`:
 
