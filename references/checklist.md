@@ -9,6 +9,9 @@ Every item below maps to either a `project-tracker` query (preferred — fast + 
 | Default branch is `master` | `get_maintenance_checklist.default_branch` | Rename to `main` (clean tree only) | Grep for `master` in CI/README/scripts before rename |
 | TODO/FIXME/XXX | `…todo_comments` | — | Verify the referenced issue isn't already fixed |
 | Branches (unmerged) | `git branch` inspection | — | Run `git merge-base --is-ancestor <tip> <target>`; if not merged, diff first (`git diff <target>..<branch> --stat`). Generic messages ("chore: wrap session hygiene") can mask significant WIP. |
+| Merged branch lingering on remote | `git ls-remote --heads <remote>` per merged branch | - | Local delete alone leaves the remote copy; `git fetch --prune` never deletes the remote branch itself. Propose `git push <remote> --delete <branch>` |
+| Empty directory husks | `find . -type d -empty -not -path "./.git/*"` | - | Invisible to `git status` (git tracks files, not directories). No file content at risk; confirm the name doesn't signal reserved future use before removing |
+| Multi-remote mirror drift | `git rev-list --left-right --count <r1>/main...<r2>/main` after fetching both remotes | - | Identify orphan commits on each side; recommend merge-reconcile, not force-push. Drift usually comes from one-way automation pushing to a single host |
 | Agent-instruction file convention | `…agents_convention` (list) | — | AGENTS.md = source of truth; CLAUDE.md/GEMINI.md = `@AGENTS.md` import pointers. Split platform-specific from shared content; draft per `references/cross-project-config.md` |
 | On-save linter hook missing | `…onsave_hook` | — | Confirm repo languages; offer the canonical `.claude/settings.json` hook (low confidence) |
 | CI missing | `…ci` | — | Offer the Gitea/GitHub Actions lint+test workflow; defer to user on whether repo warrants CI |
