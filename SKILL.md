@@ -54,6 +54,9 @@ For every item the checklist returned, enrich it into a full finding. The schema
   - `onsave_hook` - no `PostToolUse` Write|Edit linter hook in `.claude/settings.json`.
   - `ci` - no `.gitea/workflows/` or `.github/workflows/`.
   - `aislop` - no `.aislop/config.yml` quality gate.
+- **`.claude/` settings tracking** (`claude_settings` findings): the `.claude/` shared-vs-local settings convention. Target shapes and the full rationale are in `references/cross-project-config.md`. Per finding kind:
+  - `claude_settings_local_tracked` (**high**, mechanical) - `.claude/settings.local.json` is tracked. It is the per-machine local override the permission flow churns each session; tracking it can smuggle in an over-broad grant. `action_on_approval` is `git rm --cached .claude/settings.local.json` then commit - the working copy stays on disk and the ignore rule catches it afterward. Do NOT delete the working file. A `.gitignore` rule added after the commit does not retroactively untrack it.
+  - `missing_claude_settings_ignore` (**low**) - the repo tracks `.claude/settings.json` but `.gitignore` lacks the `.claude/*` + `!.claude/settings.json` convention; append those two lines. Low confidence; the other tracked `.claude/` files (CLAUDE.md, notes/) are intentional and not flagged.
 
 ### 3. Interactive approval loop (interactive mode only)
 

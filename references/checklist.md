@@ -16,10 +16,11 @@ Every item below maps to either a `project-tracker` query (preferred — fast + 
 | On-save linter hook missing | `…onsave_hook` | — | Confirm repo languages; offer the canonical `.claude/settings.json` hook (low confidence) |
 | CI missing | `…ci` | — | Offer the Gitea/GitHub Actions lint+test workflow; defer to user on whether repo warrants CI |
 | aislop gate missing | `…aislop` | — | Offer `.aislop/config.yml`; note the `from __future__ import annotations` false positive |
+| `.claude/` settings tracking | `…claude_settings` (list) | — | Two finding kinds. `claude_settings_local_tracked` (high, mechanical): `.claude/settings.local.json` is tracked - the per-machine local override committing permission-approval churn; fix is `git rm --cached` (working copy stays). A `.gitignore` rule added later does NOT retroactively untrack it. `missing_claude_settings_ignore` (low): repo tracks `.claude/settings.json` but `.gitignore` lacks the `.claude/*` + `!.claude/settings.json` convention; draft per `references/cross-project-config.md` |
 | Missing README/LICENSE/.gitignore | `…hygiene` | — | Suggest MIT for missing LICENSE; offer minimal template for others |
 | Dead code | agent grep | — | Confirm no references anywhere in repo/fleet |
 | Accidentally tracked large files | `git ls-files` + size | — | Verify no longer needed; propose `git rm` + `.gitignore` |
 | Disk warnings | project-tracker disk badge | — | Report only |
 | Docs content drift (`docs_content_drift`) | agent read + code compare | — | Read each major doc surface (README, CLAUDE.md / AGENTS.md, other in-repo docs, inline doc comments) and compare claimed behavior to current code. Distinct from `agents_convention`, which validates the AGENTS.md import **shape** - this check asks whether the **content** of those files still matches current code. Low confidence by default (the agent must actually read the doc and compare it to the code). Cite the stale statement and the code that contradicts it. Use the **docs-update** skill for the per-surface check. |
 
-The `agents_convention`, `onsave_hook`, `ci`, and `aislop` checks all draft their fixes from `references/cross-project-config.md` — the canonical target shapes for fleet-wide conventions.
+The `agents_convention`, `onsave_hook`, `ci`, `aislop`, and `claude_settings` checks all draft their fixes from `references/cross-project-config.md` — the canonical target shapes for fleet-wide conventions.

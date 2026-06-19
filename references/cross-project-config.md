@@ -130,6 +130,48 @@ diff-only mode.
 
 ---
 
+## `.claude/` settings tracking convention
+
+Claude Code splits its config into two files:
+
+- **`.claude/settings.json`** - shared, **committed**. Plugins, hooks, shared
+  permissions: anything the whole team/fleet should get.
+- **`.claude/settings.local.json`** - per-machine **local override**, must
+  **never** be tracked. The permission-approval flow writes to it every session
+  (each approved command becomes an `allow` entry), so a tracked copy churns on
+  every run and can smuggle in an over-broad grant like `PowerShell(curl *)`.
+
+The convention ignores the whole `.claude/` tree and re-includes only the shared
+settings, so any local file (settings.local.json, state, scratch) is
+auto-ignored:
+
+```gitignore
+.claude/*
+!.claude/settings.json
+```
+
+Two distinct findings draw from this section:
+
+- **`claude_settings_local_tracked`** (high, `recommendation: untrack`) -
+  `.claude/settings.local.json` is tracked. The fix is **`git rm --cached
+  .claude/settings.local.json`** then commit; the working copy stays on disk and
+  is caught by the ignore rule going forward. `action_on_approval` is exactly
+  that `git rm --cached` (do **not** delete the working file). Critically, a
+  `.gitignore` rule added *after* the file was committed does NOT retroactively
+  untrack it - git keeps tracking an already-tracked path regardless of a later
+  ignore rule, so "the ignore line exists" does not clear this finding. The only
+  fix is to untrack.
+- **`missing_claude_settings_ignore`** (low, `recommendation:
+  setup:claude_ignore`) - the repo tracks `.claude/settings.json` (so it is
+  Claude-configured) but `.gitignore` lacks the two-line convention above. Draft
+  is to append those two lines. Tolerate leading slashes (`/.claude/*`,
+  `!/.claude/settings.json`). Note: a repo may also *intentionally* track other
+  `.claude/` files (CLAUDE.md, AISLOP.md, notes/) as force-added-despite-ignore;
+  that is fine and this check does not flag it - it only validates the gitignore
+  shape, never the other tracked files.
+
+---
+
 ## Full detail
 
 - A repo's own `LINTER-SETUP.md` — the per-repo survey output, when present.
