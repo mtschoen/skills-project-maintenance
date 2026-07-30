@@ -1,6 +1,6 @@
 ---
 name: project-maintenance
-description: "Use when the user asks for a maintenance pass, cleanup, end-of-session tidy-up, or health check on a repo. Triggers: 'clean up this project', 'run maintenance', 'end of session cleanup', fleet sweeps that follow project-tracker.find_stale_maintenance. Performs a researched + interactive checklist covering dirty trees, temp files, dead code, TODOs, stale memory, master->main rename, and CLAUDE.md/AGENTS.md merge. Every action is logged."
+description: "Use when the user asks for a maintenance pass, cleanup, end-of-session tidy-up, or health check on a repo. Triggers: 'clean up this project', 'run maintenance', 'end of session cleanup', fleet sweeps that follow project-tracker.find_stale_maintenance. Performs a researched + interactive checklist covering dirty trees, temp files, dead code, TODOs, stale memory, master-to-main rename, and CLAUDE.md/AGENTS.md merge. Every action is logged."
 ---
 
 # Project Maintenance
@@ -29,9 +29,9 @@ In fleet-subagent mode, PM's fleet framing propagates through wrap's execution: 
 
 ### 1. Bootstrap
 
-Call `project-tracker.get_maintenance_checklist(name=<project>)` first. This returns the combined mechanical status in one shot and saves you most of the shell work.
+If the project-tracker MCP server is available, call `project-tracker.get_maintenance_checklist(name=<project>)` first. This returns the combined mechanical status in one shot and saves you most of the shell work. Without it, run the mechanical checks from `references/checklist.md` by hand with git/shell.
 
-Also call `project-tracker.find_stale_memory(days=30)` and scope the result to the current project.
+If available, also call `project-tracker.find_stale_memory(days=30)` and scope the result to the current project (without the MCP server, skim the project's memory directory for stale entries yourself).
 
 ### 2. Research each finding
 
@@ -99,7 +99,7 @@ Build the summary:
 }
 ```
 
-Call `project-tracker.record_maintenance_run(name=<project>, summary=<summary>)` to persist the mechanical log in `.maintenance.json`.
+Call `project-tracker.record_maintenance_run(name=<project>, summary=<summary>)` to persist the mechanical log in `.maintenance.json` (or append the entry to `.maintenance.json` directly when the MCP server is absent).
 
 Return to the user (interactive) or parent (fleet):
 
