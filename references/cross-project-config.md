@@ -86,7 +86,7 @@ time). Tailor the `case` arms to the repo's actual languages.
 
 ---
 
-## CI (`.github/workflows/` — GitHub Actions)
+## CI (`.gitea/workflows/` — Gitea Actions)
 
 Automates the validate tier (lint + format check + tests) so regressions block
 at merge. Minimal lint skeleton:
@@ -106,7 +106,7 @@ jobs:
 ```
 
 Scope paths explicitly (or rely on a root `pyproject.toml` `exclude`) so CI does
-not run on generated/fixture trees.
+not run on generated/fixture trees. GitHub-mirrored repos use `.github/workflows/`.
 
 ---
 
@@ -123,7 +123,7 @@ exclude:
 ```
 
 CI step (pin a version, NOT `@latest`): `npx --yes aislop@<ver> ci .` — use the
-CLI, not the GitHub composite action. Known Python false
+CLI on Gitea Actions, not the GitHub composite action. Known Python false
 positive: `ai-slop/unused-import` fires on `from __future__ import annotations`
 (do NOT remove that line). aislop scores the **whole repo** — there is no
 diff-only mode.
