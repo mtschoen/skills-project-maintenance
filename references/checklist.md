@@ -2,7 +2,7 @@
 
 Every item below maps to either a `project-tracker` query (preferred — fast + reliable) or an agent-run inspection. Every item produces zero or more findings; findings are researched before surfacing.
 
-**Note:** Rows for per-session hygiene (temp files, uncommitted/unpushed, stale memory, merged branches, stale worktrees) have been moved to the `wrap` skill. PM invokes wrap as step 0 of its procedure, and wrap's findings are part of a PM run. This table now contains only the rare/audit-tier checks PM owns directly.
+**Note:** Rows for per-session hygiene (temp files, uncommitted/unpushed, stale memory, merged branches, stale worktrees) have moved to the `wrap` skill's own checklist (`wrap`'s `references/hygiene-checklist.md`). PM does not invoke wrap and does not re-run those checks. This table contains only the rare/audit-tier checks PM owns directly.
 
 | Check | Source | Auto-fix (Phase 2) | Research required |
 |---|---|---|---|
@@ -12,12 +12,12 @@ Every item below maps to either a `project-tracker` query (preferred — fast + 
 | Merged branch lingering on remote | `git ls-remote --heads <remote>` per merged branch | - | Local delete alone leaves the remote copy; `git fetch --prune` never deletes the remote branch itself. Propose `git push <remote> --delete <branch>` |
 | Empty directory husks | `find . -type d -empty -not -path "./.git/*"` | - | Invisible to `git status` (git tracks files, not directories). No file content at risk; confirm the name doesn't signal reserved future use before removing |
 | Multi-remote mirror drift | `git rev-list --left-right --count <r1>/main...<r2>/main` after fetching both remotes | - | Identify orphan commits on each side; recommend merge-reconcile, not force-push. Drift usually comes from one-way automation pushing to a single host |
-| Agent-instruction file convention | `…agents_convention` (list) | — | AGENTS.md = source of truth; CLAUDE.md/GEMINI.md = `@AGENTS.md` import pointers. Split platform-specific from shared content; draft per `references/cross-project-config.md` |
-| On-save linter hook missing | `…onsave_hook` | — | Confirm repo languages; offer the canonical `.claude/settings.json` hook (low confidence) |
-| CI missing | `…ci` | — | Offer the Gitea/GitHub Actions lint+test workflow; defer to user on whether repo warrants CI |
-| aislop gate missing | `…aislop` | — | Offer `.aislop/config.yml`; note the `from __future__ import annotations` false positive |
-| `.claude/` settings tracking | `…claude_settings` (list) | — | Two finding kinds. `claude_settings_local_tracked` (high, mechanical): `.claude/settings.local.json` is tracked - the per-machine local override committing permission-approval churn; fix is `git rm --cached` (working copy stays). A `.gitignore` rule added later does NOT retroactively untrack it. `missing_claude_settings_ignore` (low): repo tracks `.claude/settings.json` but `.gitignore` lacks the `.claude/*` + `!.claude/settings.json` convention; draft per `references/cross-project-config.md` |
-| Missing README/LICENSE/.gitignore | `…hygiene` | — | Suggest MIT for missing LICENSE; offer minimal template for others |
+| Agent-instruction file convention | `…agents_convention` (list); by hand: `ls AGENTS.md CLAUDE.md GEMINI.md 2>/dev/null` then `head -1 CLAUDE.md GEMINI.md 2>/dev/null` to see whether each is a bare `@AGENTS.md` pointer or has its own content | — | AGENTS.md = source of truth; CLAUDE.md/GEMINI.md = `@AGENTS.md` import pointers. Split platform-specific from shared content; draft per `references/cross-project-config.md` |
+| On-save linter hook missing | `…onsave_hook`; by hand: `jq '.hooks.PostToolUse' .claude/settings.json 2>/dev/null` (absent/null means no Write\|Edit linter hook) | — | Confirm repo languages; offer the canonical `.claude/settings.json` hook (low confidence) |
+| CI missing | `…ci`; by hand: `ls .github/workflows .gitea/workflows 2>/dev/null` (empty/missing means no CI) | — | Offer the Gitea/GitHub Actions lint+test workflow; defer to user on whether repo warrants CI |
+| aislop gate missing | `…aislop`; by hand: `test -f .aislop/config.yml || echo missing` | — | Offer `.aislop/config.yml`; note the `from __future__ import annotations` false positive |
+| `.claude/` settings tracking | `…claude_settings` (list); by hand: `git ls-files --error-unmatch .claude/settings.local.json 2>/dev/null` (tracked if it prints the path) and `grep -q '^\.claude/\*' .gitignore` (present if the ignore convention is missing, i.e. grep fails) | — | Two finding kinds. `claude_settings_local_tracked` (high, mechanical): `.claude/settings.local.json` is tracked - the per-machine local override committing permission-approval churn; fix is `git rm --cached` (working copy stays). A `.gitignore` rule added later does NOT retroactively untrack it. `missing_claude_settings_ignore` (low): repo tracks `.claude/settings.json` but `.gitignore` lacks the `.claude/*` + `!.claude/settings.json` convention; draft per `references/cross-project-config.md` |
+| Missing README/LICENSE/.gitignore | `…hygiene`; by hand: `ls README.md LICENSE .gitignore 2>/dev/null` (each missing name is a finding) | — | Suggest MIT for missing LICENSE; offer minimal template for others |
 | Dead code | agent grep | — | Confirm no references anywhere in repo/fleet |
 | Accidentally tracked large files | `git ls-files` + size | — | Verify no longer needed; propose `git rm` + `.gitignore` |
 | Disk warnings | project-tracker disk badge | — | Report only |

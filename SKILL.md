@@ -10,22 +10,24 @@ End-of-session cleanup for a single repo. Works in two modes:
 - **Interactive** - running in a user-facing session. Walk the checklist, research each finding, and prompt the user per item before taking action.
 - **Fleet subagent** - running under `fleet-orchestration`. Produce the same researched findings but return them to the parent as structured data. Do not prompt - the parent drives the approval loop with the user.
 
-**Relationship to the `wrap` skill:** For the per-session-hygiene portion of a maintenance pass, this skill delegates to `wrap`. PM's own checklist now covers only the rare/audit-tier items that do not belong in a session-close ritual (default-branch renames, the agent-instruction file convention - AGENTS.md source of truth with `@AGENTS.md` import pointers, missing README/LICENSE/.gitignore, dead code, large tracked files, disk warnings, and cross-project config drift - on-save linter hook, CI, aislop gate). If you are running in an interactive session and the user wants a full end-of-session hygiene pass, prefer `/wrap` directly - it does the session-scoped work without PM's audit overhead.
+**Relationship to the `wrap` skill:** wrap and PM split hygiene by scope, not by delegation. Wrap is the session-end catch-net across every repo the session touched; PM is a deep single-repo pass and does not invoke wrap. Per `wrap`'s `references/hygiene-checklist.md`, wrap's per-session hygiene checks (dirty trees, temp files, stale memory, merged branches, stale worktrees) are a deliberate subset of PM's fuller checklist - PM's own checklist below covers only the rare/audit-tier items that do not belong in a session-close ritual (default-branch renames, the agent-instruction file convention - AGENTS.md source of truth with `@AGENTS.md` import pointers, missing README/LICENSE/.gitignore, dead code, large tracked files, disk warnings, and cross-project config drift - on-save linter hook, CI, aislop gate). When a session is ending and a maintenance pass was requested, run PM on the target repo and let `/wrap` handle session-wide concerns separately - not the reverse. If you are running in an interactive session and the user actually wants a full end-of-session hygiene pass across everything the session touched, prefer `/wrap` directly.
 
 ## Operating principles
 
-1. **Verify before delete.** Never delete untracked files. For tracked files, delete only when (a) the working tree is clean and (b) you can state why the file has served its purpose. *(Divergence from wrap: the wrap skill **may** delete untracked files with per-item approval. When PM's procedure delegates to wrap as step 0, wrap's looser rule applies during that step - do not let PM's stricter rule override it. PM's stricter rule still applies to everything PM does directly.)*
+1. **Verify before delete.** Never delete untracked files. For tracked files, delete only when (a) the working tree is clean and (b) you can state why the file has served its purpose. *(Divergence from wrap: the wrap skill **may** delete untracked files with per-item approval - a deliberately looser rule that fits its scratch-cleanup purpose. PM does not invoke wrap and does not inherit that looser rule; PM's stricter rule applies to everything PM does.)*
 2. **Research before asking.** Each finding you surface must already include evidence, a recommendation, a confidence level, and the exact action you'd take on approval. The user should be able to y/n without opening any files themselves.
 3. **Log everything.** Every automated action, every user-approved action, and every user-rejected proposal must appear in the final action log. Nothing the agent does should be invisible.
 4. **Age is a hint, not a gate.** A day-old memory may already be obsolete; a month-old memory may still be load-bearing. Semantic checks (fix-implemented, dangling reference, superseded) decide staleness.
 
 ## Procedure
 
-### 0. Delegate to wrap first
+### 0. Confirm scope - PM does not run wrap
 
-Before running any of PM's own checks, invoke the `wrap` skill on this project. Wrap's output (memory offload findings + per-session hygiene findings + action log) is part of this maintenance run. If wrap surfaces findings that overlap with anything in PM's remaining checklist, do not duplicate them - PM's residual checklist covers rare/audit items only.
+PM is a single-repo, audit-tier pass. It does not invoke the `wrap` skill: wrap runs its own five-phase, whole-session ritual (multi-repo scope detection across every repo the session touched, background-process and teammate-agent teardown, a mandatory closing sentinel telling the user the session is safe to close) with no non-interactive "findings-only" variant - even `wrap --fast` still executes writes autonomously and still ends with that sentinel. Invoking it from inside PM, especially from a fleet subagent, would sweep repos PM was never asked to touch, tear down live background work, and emit a session-close instruction nobody asked for.
 
-In fleet-subagent mode, PM's fleet framing propagates through wrap's execution: wrap will produce findings-only output instead of prompting, because the agent running PM is already in that mode.
+Do not duplicate what wrap already covers, though: PM's remaining checklist (below) is deliberately scoped to the rare/audit-tier items that wrap's `references/hygiene-checklist.md` explicitly excludes from its own per-session subset. If the user separately wants the session-wide hygiene pass, point them at `/wrap` as its own invocation - not as a step inside this one.
+
+In fleet-subagent mode, this changes nothing about PM's own behavior: PM runs its checklist directly and returns findings-only output per its own contract (see "Fleet subagent" above) - that contract belongs to PM, not to wrap.
 
 ### 1. Bootstrap
 

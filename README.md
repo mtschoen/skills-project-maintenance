@@ -8,7 +8,7 @@ A Claude Code skill that runs an end-of-session maintenance pass on a single rep
 
 ## What it does
 
-Delegates session hygiene to the `wrap` skill first, then covers the rare/audit-tier items wrap doesn't: default-branch renames, CLAUDE.md/AGENTS.md merging, missing README/LICENSE/.gitignore, dead code, large tracked files, stale memory, remote-lingering merged branches, empty directory husks, and multi-remote mirror drift. Bootstraps from `project-tracker.get_maintenance_checklist` and records the run via `project-tracker.record_maintenance_run`.
+Covers the rare/audit-tier hygiene items that `wrap`'s per-session checklist doesn't (PM does not invoke wrap - the two skills split by scope, not by delegation): default-branch renames, CLAUDE.md/AGENTS.md merging, missing README/LICENSE/.gitignore, dead code, large tracked files, stale memory, remote-lingering merged branches, empty directory husks, and multi-remote mirror drift. Bootstraps from `project-tracker.get_maintenance_checklist` and records the run via `project-tracker.record_maintenance_run`.
 
 The authoritative spec is [`SKILL.md`](SKILL.md).
 
