@@ -2,7 +2,7 @@
 
 Every item below maps to either a `project-tracker` query (preferred — fast + reliable) or an agent-run inspection. Every item produces zero or more findings; findings are researched before surfacing.
 
-**Note:** Rows for per-session hygiene (temp files, uncommitted/unpushed, stale memory, merged branches, stale worktrees) live in the `wrap` skill's own checklist (`wrap`'s `references/hygiene-checklist.md`) as the canonical source - see `SKILL.md` step 0. project-maintenance does not invoke wrap, but step 0 re-runs the read-only detection side of those same checks directly against this repo, findings-only; wrap remains the owner of the interactive session-close ritual and its autonomous fixes. This table contains only the rare/audit-tier checks project-maintenance owns directly, on top of that step 0 survey.
+**Note:** Per-session hygiene rows live in the `wrap` skill's `references/hygiene-checklist.md` (canonical source; step 0 re-runs their detection queries findings-only, without invoking wrap). This table contains only the rare/audit-tier checks this skill owns directly, on top of that step 0 survey.
 
 | Check | Source | Auto-fix (Phase 2) | Research required |
 |---|---|---|---|
