@@ -40,8 +40,21 @@ import line comes first; genuinely tool-specific rules follow below it:
 @AGENTS.md
 
 ## Claude-only
-- Worktrees live under `.claude/worktrees/`; reserve with a self-documenting `.worktree-reserved` marker (contents: `reserved-by`, `reserved-at`, `stale-after`), not a bare touch file.
+- Worktrees live under `.worktrees/`; reserve with a self-documenting `.worktree-reserved` marker (contents: `reserved-by`, `reserved-at`, `stale-after`), not a bare touch file.
 - The on-save linter hook is configured in `.claude/settings.json`.
+```
+
+`reserved-by` is any harness name plus its session/instance id, or `user@host` for a
+manual reservation; `reserved-at` is ISO 8601 UTC (`YYYY-MM-DDTHH:MM:SSZ`). Filled-in
+example (full field spec lives in unity-batchmode-worktree's SKILL.md):
+
+```text
+worktree pool-slot reservation (unity-batchmode-worktree skill)
+reserved-by: opencode session 7f3a9c12
+reserved-at: 2026-08-04T21:40:00Z
+branch: fix/worktree-reserved-marker
+task: finalize .worktree-reserved marker spec across three PRs
+stale-after: 24h - safe to delete if reserved-at is older and the owning session is gone
 ```
 
 ### What counts as "platform-specific" (stays in CLAUDE.md / GEMINI.md)
