@@ -40,7 +40,7 @@ import line comes first; genuinely tool-specific rules follow below it:
 @AGENTS.md
 
 ## Claude-only
-- Worktrees live under `.claude/worktrees/`; reserve with `.worktree-reserved`.
+- Worktrees live under `.claude/worktrees/`; reserve with a self-documenting `.worktree-reserved` marker (contents: `reserved-by`, `reserved-at`, `stale-after`), not a bare touch file.
 - The on-save linter hook is configured in `.claude/settings.json`.
 ```
 
