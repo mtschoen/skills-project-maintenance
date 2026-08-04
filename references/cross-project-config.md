@@ -40,7 +40,7 @@ import line comes first; genuinely tool-specific rules follow below it:
 @AGENTS.md
 
 ## Claude-only
-- Worktrees live under `.claude/worktrees/`; reserve with `.claude-reserved`.
+- Worktrees live under `.claude/worktrees/`; reserve with `.worktree-reserved`.
 - The on-save linter hook is configured in `.claude/settings.json`.
 ```
 
@@ -117,7 +117,7 @@ PR/CI gate. Target config:
 
 ```yaml
 ci:
-  failBelow: 80          # reference: git-wizard gates at 80
+  failBelow: 80          # tune to the repo's current pass rate
 exclude:
   - "*/workspace/**"     # generated / fixture trees
 ```
