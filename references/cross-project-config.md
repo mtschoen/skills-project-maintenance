@@ -1,12 +1,12 @@
 # Cross-project configuration conventions
 
-The canonical *target shapes* for the fleet-wide conventions PM checks. When a
+The canonical *target shapes* for the fleet-wide conventions project-maintenance checks. When a
 project-tracker `get_maintenance_checklist` finding points here, use these as
 the draft you bring to the user — never apply straight to disk.
 
 This list grows. **When a new cross-project convention is adopted, add its
 target shape here AND a detection check in project-tracker's checklist
-scanner so PM surfaces drift automatically.**
+scanner so project-maintenance surfaces drift automatically.**
 
 ---
 

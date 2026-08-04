@@ -10,22 +10,22 @@ End-of-session cleanup for a single repo. Works in two modes:
 - **Interactive** - running in a user-facing session. Walk the checklist, research each finding, and prompt the user per item before taking action.
 - **Fleet subagent** - running under `fleet-orchestration`. Produce the same researched findings but return them to the parent as structured data. Do not prompt - the parent drives the approval loop with the user.
 
-**Relationship to the `wrap` skill:** For the per-session-hygiene portion of a maintenance pass, this skill delegates to `wrap`. PM's own checklist now covers only the rare/audit-tier items that do not belong in a session-close ritual (default-branch renames, the agent-instruction file convention - AGENTS.md source of truth with `@AGENTS.md` import pointers, missing README/LICENSE/.gitignore, dead code, large tracked files, disk warnings, and cross-project config drift - on-save linter hook, CI, aislop gate). If you are running in an interactive session and the user wants a full end-of-session hygiene pass, prefer `/wrap` directly - it does the session-scoped work without PM's audit overhead.
+**Relationship to the `wrap` skill:** wrap owns the interactive, autonomous-fix, session-close version of per-session hygiene; this skill re-runs the same items detection-only in step 0, reading wrap's `references/hygiene-checklist.md` (in the installed wrap skill's directory) as the canonical list. For a full end-of-session pass across everything the session touched, use `/wrap` directly instead.
 
 ## Operating principles
 
-1. **Verify before delete.** Never delete untracked files. For tracked files, delete only when (a) the working tree is clean and (b) you can state why the file has served its purpose. *(Divergence from wrap: the wrap skill **may** delete untracked files with per-item approval. When PM's procedure delegates to wrap as step 0, wrap's looser rule applies during that step - do not let PM's stricter rule override it. PM's stricter rule still applies to everything PM does directly.)*
+1. **Verify before delete.** Never delete untracked files. For tracked files, delete only when (a) the working tree is clean and (b) you can state why the file has served its purpose. This governs every finding this skill produces, step 0's hygiene hits included (wrap's looser untracked-delete rule never applies here).
 2. **Research before asking.** Each finding you surface must already include evidence, a recommendation, a confidence level, and the exact action you'd take on approval. The user should be able to y/n without opening any files themselves.
 3. **Log everything.** Every automated action, every user-approved action, and every user-rejected proposal must appear in the final action log. Nothing the agent does should be invisible.
 4. **Age is a hint, not a gate.** A day-old memory may already be obsolete; a month-old memory may still be load-bearing. Semantic checks (fix-implemented, dangling reference, superseded) decide staleness.
 
 ## Procedure
 
-### 0. Delegate to wrap first
+### 0. Hygiene survey (findings-only)
 
-Before running any of PM's own checks, invoke the `wrap` skill on this project. Wrap's output (memory offload findings + per-session hygiene findings + action log) is part of this maintenance run. If wrap surfaces findings that overlap with anything in PM's remaining checklist, do not duplicate them - PM's residual checklist covers rare/audit items only.
+If the wrap skill is installed, run the read-only detection queries from its `references/hygiene-checklist.md` (the canonical per-session item list; consumed by reference, not duplicated here) against this repo. If wrap is not installed, check at minimum: uncommitted changes, unpushed commits, temp files, project-scoped stale memory, merged local branches, and stale worktrees.
 
-In fleet-subagent mode, PM's fleet framing propagates through wrap's execution: wrap will produce findings-only output instead of prompting, because the agent running PM is already in that mode.
+Turn every hit into a normal finding per `references/finding-schema.md` (evidence, recommendation, confidence, exact action on approval) and feed it into step 2's research pass. Detection only: never execute a fix in this step, and never invoke the wrap skill itself - its interactive, whole-session close-out procedure is not part of a maintenance pass.
 
 ### 1. Bootstrap
 
