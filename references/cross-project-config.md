@@ -146,6 +146,7 @@ diff-only mode.
 ## Local settings tracking convention
 
 Most harnesses split config into two files. For example, Claude Code does this:
+
 - **`.claude/settings.json`** - shared, **committed**. Plugins, hooks, shared
   permissions: anything the whole team/fleet should get.
 - **`.claude/settings.local.json`** - per-machine **local override**, must
