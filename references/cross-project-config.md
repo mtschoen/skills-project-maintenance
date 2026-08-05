@@ -39,9 +39,9 @@ import line comes first; genuinely tool-specific rules follow below it:
 ```text
 @AGENTS.md
 
-## Claude-only
+## Common configurations
 - Worktrees live under `.worktrees/`; reserve with a self-documenting `.worktree-reserved` marker (contents: `reserved-by`, `reserved-at`, `stale-after`), not a bare touch file.
-- The on-save linter hook is configured in `.claude/settings.json`.
+- The on-save linter hook is configured in project settings, e.g. `.agents/settings.json`.
 ```
 
 `reserved-by` is any harness name plus its session/instance id, or `user@host` for a
