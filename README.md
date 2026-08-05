@@ -1,6 +1,6 @@
 # project-maintenance
 
-An agent skill that runs an end-of-session maintenance pass on a single repo: a researched, interactive checklist where every finding arrives with evidence, a recommendation, a confidence level, and the exact action on approval - and every action is logged.
+A skill that runs an end-of-session maintenance pass on a single repo: a researched, interactive checklist where every finding arrives with evidence, a recommendation, a confidence level, and the exact action on approval - and every action is logged.
 
 ## When it fires
 
