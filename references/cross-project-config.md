@@ -68,11 +68,11 @@ leaving the aislop section in CLAUDE.md; it is not Claude-specific — move it.
 
 ---
 
-## On-save linter hook (`.claude/settings.json`)
+## On-save linter hook
 
-A `PostToolUse` Write|Edit hook that lints each file as it is written. This is a
-genuinely Claude-Code-specific mechanism (stays in `.claude/settings.json`, not
-AGENTS.md). Canonical ruff + shellcheck form:
+A `PostToolUse` Write|Edit hook that lints each file as it is written. This is
+not supported in all agent harnesses. For claude code, add the following to
+ `.claude/settings.json`. Canonical ruff + shellcheck form:
 
 ```json
 {
@@ -143,10 +143,9 @@ diff-only mode.
 
 ---
 
-## `.claude/` settings tracking convention
+## Local settings tracking convention
 
-Claude Code splits its config into two files:
-
+Most harnesses split config into two files. For example, Claude Code does this:
 - **`.claude/settings.json`** - shared, **committed**. Plugins, hooks, shared
   permissions: anything the whole team/fleet should get.
 - **`.claude/settings.local.json`** - per-machine **local override**, must
@@ -163,9 +162,9 @@ auto-ignored:
 !.claude/settings.json
 ```
 
-Two distinct findings draw from this section:
+Two distinct findings draw from this section, using Claude Code as an example:
 
-- **`claude_settings_local_tracked`** (high, `recommendation: untrack`) -
+- **`agents_settings_local_tracked`** (high, `recommendation: untrack`) -
   `.claude/settings.local.json` is tracked. The fix is **`git rm --cached
   .claude/settings.local.json`** then commit; the working copy stays on disk and
   is caught by the ignore rule going forward. `action_on_approval` is exactly
@@ -174,8 +173,8 @@ Two distinct findings draw from this section:
   untrack it - git keeps tracking an already-tracked path regardless of a later
   ignore rule, so "the ignore line exists" does not clear this finding. The only
   fix is to untrack.
-- **`missing_claude_settings_ignore`** (low, `recommendation:
-  setup:claude_ignore`) - the repo tracks `.claude/settings.json` (so it is
+- **`missing_agents_settings_ignore`** (low, `recommendation:
+  setup:agents_ignore`) - the repo tracks `.claude/settings.json` (so it is
   Claude-configured) but `.gitignore` lacks the two-line convention above. Draft
   is to append those two lines. Tolerate leading slashes (`/.claude/*`,
   `!/.claude/settings.json`). Note: a repo may also *intentionally* track other
