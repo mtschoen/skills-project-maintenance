@@ -188,5 +188,5 @@ Two distinct findings draw from this section:
 ## Full detail
 
 - A repo's own `LINTER-SETUP.md` — the per-repo survey output, when present.
-- The aislop section of the user's global `CLAUDE.md` - install rules and the
+- The aislop section of the user's global `AGENTS.md` - install rules and the
   pinned version.
