@@ -39,9 +39,22 @@ import line comes first; genuinely tool-specific rules follow below it:
 ```text
 @AGENTS.md
 
-## Claude-only
-- Worktrees live under `.claude/worktrees/`; reserve with `.claude-reserved`.
-- The on-save linter hook is configured in `.claude/settings.json`.
+## Common configurations
+- Worktrees live under `.worktrees/`; reserve with a self-documenting `.worktree-reserved` marker (contents: `reserved-by`, `reserved-at`, `stale-after`), not a bare touch file.
+- The on-save linter hook is configured in project settings, e.g. `.agents/settings.json`.
+```
+
+`reserved-by` is any harness name plus its session/instance id, or `user@host` for a
+manual reservation; `reserved-at` is ISO 8601 UTC (`YYYY-MM-DDTHH:MM:SSZ`). Filled-in
+example (full field spec lives in unity-batchmode-worktree's SKILL.md):
+
+```text
+worktree pool-slot reservation (unity-batchmode-worktree skill)
+reserved-by: opencode session 7f3a9c12
+reserved-at: 2026-08-04T21:40:00Z
+branch: fix/worktree-reserved-marker
+task: finalize .worktree-reserved marker spec across three PRs
+stale-after: 24h - safe to delete if reserved-at is older and the owning session is gone
 ```
 
 ### What counts as "platform-specific" (stays in CLAUDE.md / GEMINI.md)
@@ -55,11 +68,11 @@ leaving the aislop section in CLAUDE.md; it is not Claude-specific — move it.
 
 ---
 
-## On-save linter hook (`.claude/settings.json`)
+## On-save linter hook
 
-A `PostToolUse` Write|Edit hook that lints each file as it is written. This is a
-genuinely Claude-Code-specific mechanism (stays in `.claude/settings.json`, not
-AGENTS.md). Canonical ruff + shellcheck form:
+A `PostToolUse` Write|Edit hook that lints each file as it is written. This is
+not supported in all agent harnesses. For claude code, add the following to
+ `.claude/settings.json`. Canonical ruff + shellcheck form:
 
 ```json
 {
@@ -117,7 +130,7 @@ PR/CI gate. Target config:
 
 ```yaml
 ci:
-  failBelow: 80          # reference: git-wizard gates at 80
+  failBelow: 80          # tune to the repo's current pass rate
 exclude:
   - "*/workspace/**"     # generated / fixture trees
 ```
@@ -130,10 +143,9 @@ diff-only mode.
 
 ---
 
-## `.claude/` settings tracking convention
+## Local settings tracking convention
 
-Claude Code splits its config into two files:
-
+Most harnesses split config into two files. For example, Claude Code does this:
 - **`.claude/settings.json`** - shared, **committed**. Plugins, hooks, shared
   permissions: anything the whole team/fleet should get.
 - **`.claude/settings.local.json`** - per-machine **local override**, must
@@ -150,9 +162,9 @@ auto-ignored:
 !.claude/settings.json
 ```
 
-Two distinct findings draw from this section:
+Two distinct findings draw from this section, using Claude Code as an example:
 
-- **`claude_settings_local_tracked`** (high, `recommendation: untrack`) -
+- **`agents_settings_local_tracked`** (high, `recommendation: untrack`) -
   `.claude/settings.local.json` is tracked. The fix is **`git rm --cached
   .claude/settings.local.json`** then commit; the working copy stays on disk and
   is caught by the ignore rule going forward. `action_on_approval` is exactly
@@ -161,8 +173,8 @@ Two distinct findings draw from this section:
   untrack it - git keeps tracking an already-tracked path regardless of a later
   ignore rule, so "the ignore line exists" does not clear this finding. The only
   fix is to untrack.
-- **`missing_claude_settings_ignore`** (low, `recommendation:
-  setup:claude_ignore`) - the repo tracks `.claude/settings.json` (so it is
+- **`missing_agents_settings_ignore`** (low, `recommendation:
+  setup:agents_ignore`) - the repo tracks `.claude/settings.json` (so it is
   Claude-configured) but `.gitignore` lacks the two-line convention above. Draft
   is to append those two lines. Tolerate leading slashes (`/.claude/*`,
   `!/.claude/settings.json`). Note: a repo may also *intentionally* track other
@@ -175,5 +187,5 @@ Two distinct findings draw from this section:
 ## Full detail
 
 - A repo's own `LINTER-SETUP.md` — the per-repo survey output, when present.
-- The aislop section of the user's global `CLAUDE.md` - install rules and the
+- The aislop section of the user's global `AGENTS.md` - install rules and the
   pinned version.

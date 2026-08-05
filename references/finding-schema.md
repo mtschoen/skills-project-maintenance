@@ -20,8 +20,8 @@ project-tracker's `get_maintenance_checklist` returns partial findings — they 
 Three recommendation values draw their `action_on_approval` from `references/cross-project-config.md`:
 
 - `migrate_to_agents` — establish AGENTS.md as the source of truth and/or rewrite `CLAUDE.md`/`GEMINI.md` to the `@AGENTS.md` import-pointer form (the weak-link upgrade is a sub-case).
-- `setup:<thing>` — scaffold a fleet-standard config the repo is missing: `setup:onsave_hook`, `setup:ci`, `setup:aislop`, `setup:claude_ignore`.
-- `untrack` — stop tracking a file that should never have been committed, keeping the working copy: `git rm --cached <path>` then commit. Used by `claude_settings_local_tracked` (`.claude/settings.local.json`). Distinct from `delete`, which removes the working file too.
+- `setup:<thing>` — scaffold a fleet-standard config the repo is missing: `setup:onsave_hook`, `setup:ci`, `setup:aislop`, `setup:agents_ignore`.
+- `untrack` — stop tracking a file that should never have been committed, keeping the working copy: `git rm --cached <path>` then commit. Used by `agents_settings_local_tracked` (`.agents/settings.local.json`). Distinct from `delete`, which removes the working file too.
 
 ## Action log entry shape
 
