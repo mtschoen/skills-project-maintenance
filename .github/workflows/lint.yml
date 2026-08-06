@@ -29,3 +29,13 @@ jobs:
       - run: ruff check evals tests
       - run: ruff format --check evals tests
       - run: pytest tests/ -q
+
+  shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          severity: error
+          scandir: './evals'
