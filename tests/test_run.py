@@ -133,17 +133,14 @@ class RunnerTests(unittest.TestCase):
             ),
             stderr="",
         )
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with patch.dict(
-                os.environ, {"CLAUDECODE": "nested", "KEPT": "yes"}, clear=True
-            ):
-                with patch.object(
-                    runner.subprocess, "run", return_value=process
-                ) as run_process:
-                    with patch.object(runner.time, "time", side_effect=[10.0, 11.5]):
-                        response, timing = runner.invoke_agent(
-                            "prompt", Path(temporary_directory), "test-model", 30
-                        )
+        with tempfile.TemporaryDirectory() as temporary_directory, patch.dict(
+            os.environ, {"CLAUDECODE": "nested", "KEPT": "yes"}, clear=True
+        ), patch.object(
+            runner.subprocess, "run", return_value=process
+        ) as run_process, patch.object(runner.time, "time", side_effect=[10.0, 11.5]):
+            response, timing = runner.invoke_agent(
+                "prompt", Path(temporary_directory), "test-model", 30
+            )
 
         self.assertEqual(response, "response text")
         self.assertEqual(timing["total_tokens"], 10)
@@ -156,14 +153,12 @@ class RunnerTests(unittest.TestCase):
 
     def test_invoke_agent_uses_elapsed_duration_when_wrapper_omits_fields(self):
         process = Mock(returncode=0, stdout='{"result": null}', stderr="")
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with patch.object(
-                runner.subprocess, "run", return_value=process
-            ) as run_process:
-                with patch.object(runner.time, "time", side_effect=[2.0, 2.75]):
-                    response, timing = runner.invoke_agent(
-                        "prompt", Path(temporary_directory), None, 10
-                    )
+        with tempfile.TemporaryDirectory() as temporary_directory, patch.object(
+            runner.subprocess, "run", return_value=process
+        ) as run_process, patch.object(runner.time, "time", side_effect=[2.0, 2.75]):
+            response, timing = runner.invoke_agent(
+                "prompt", Path(temporary_directory), None, 10
+            )
 
         self.assertEqual(response, "")
         self.assertEqual(timing["total_tokens"], 0)
@@ -240,19 +235,18 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(outcome["status"], "error")
             self.assertIn("missing seed", outcome["error"])
 
-            with patch.object(runner, "materialize_workspace"):
-                with patch.object(
-                    runner, "run_scenario_script", return_value=(False, "setup broke")
-                ):
-                    outcome = runner.run_single(
-                        eval_entry,
-                        "with_skill",
-                        run_directory,
-                        scenarios_root,
-                        "skill",
-                        None,
-                        5,
-                    )
+            with patch.object(runner, "materialize_workspace"), patch.object(
+                runner, "run_scenario_script", return_value=(False, "setup broke")
+            ):
+                outcome = runner.run_single(
+                    eval_entry,
+                    "with_skill",
+                    run_directory,
+                    scenarios_root,
+                    "skill",
+                    None,
+                    5,
+                )
             self.assertEqual(outcome, {"status": "error", "error": "setup broke"})
 
     def test_run_single_writes_probe_and_returns_agent_outcomes(self):
@@ -269,21 +263,20 @@ class RunnerTests(unittest.TestCase):
                 runner,
                 "run_scenario_script",
                 side_effect=[(True, ""), (False, "probe broke")],
+            ), patch.object(
+                runner,
+                "invoke_agent",
+                return_value=("", {"_error": "agent broke"}),
             ):
-                with patch.object(
-                    runner,
-                    "invoke_agent",
-                    return_value=("", {"_error": "agent broke"}),
-                ):
-                    outcome = runner.run_single(
-                        eval_entry,
-                        "with_skill",
-                        error_run,
-                        scenarios_root,
-                        "skill",
-                        None,
-                        5,
-                    )
+                outcome = runner.run_single(
+                    eval_entry,
+                    "with_skill",
+                    error_run,
+                    scenarios_root,
+                    "skill",
+                    None,
+                    5,
+                )
             self.assertEqual(outcome, {"status": "error", "error": "agent broke"})
             self.assertEqual(
                 (error_run / "outputs" / "post-state.txt").read_text(),
@@ -295,21 +288,20 @@ class RunnerTests(unittest.TestCase):
                 runner,
                 "run_scenario_script",
                 side_effect=[(True, ""), (True, "state=yes")],
+            ), patch.object(
+                runner,
+                "invoke_agent",
+                return_value=("answer", {"total_duration_seconds": 2.5}),
             ):
-                with patch.object(
-                    runner,
-                    "invoke_agent",
-                    return_value=("answer", {"total_duration_seconds": 2.5}),
-                ):
-                    outcome = runner.run_single(
-                        eval_entry,
-                        "without_skill",
-                        successful_run,
-                        scenarios_root,
-                        "skill",
-                        None,
-                        5,
-                    )
+                outcome = runner.run_single(
+                    eval_entry,
+                    "without_skill",
+                    successful_run,
+                    scenarios_root,
+                    "skill",
+                    None,
+                    5,
+                )
             self.assertEqual(outcome, {"status": "ok", "duration": 2.5})
             self.assertEqual(
                 (successful_run / "outputs" / "post-state.txt").read_text(), "state=yes"
@@ -357,9 +349,10 @@ class RunnerTests(unittest.TestCase):
                 "2",
                 "--dry-run",
             ]
-            with patch.object(sys, "argv", arguments):
-                with patch("sys.stderr") as standard_error:
-                    runner.main()
+            with patch.object(sys, "argv", arguments), patch(
+                "sys.stderr"
+            ) as standard_error:
+                runner.main()
 
             rendered = "".join(
                 call.args[0] for call in standard_error.write.call_args_list
@@ -403,12 +396,10 @@ class RunnerTests(unittest.TestCase):
                 "--parallel",
                 "1",
             ]
-            with patch.object(sys, "argv", arguments):
-                with patch.object(
-                    runner, "run_single", side_effect=RuntimeError("worker broke")
-                ):
-                    with patch("sys.stderr") as standard_error:
-                        runner.main()
+            with patch.object(sys, "argv", arguments), patch.object(
+                runner, "run_single", side_effect=RuntimeError("worker broke")
+            ), patch("sys.stderr") as standard_error:
+                runner.main()
 
             rendered = "".join(
                 call.args[0] for call in standard_error.write.call_args_list

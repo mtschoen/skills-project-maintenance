@@ -92,16 +92,15 @@ class GraderTests(unittest.TestCase):
             ),
             stderr="",
         )
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with patch.object(
-                grader.subprocess, "run", return_value=process
-            ) as run_process:
-                match = grader._check_llm_judge(
-                    Path(temporary_directory),
-                    "response",
-                    "post-state",
-                    {"category": "quality", "prompt": "Is it good?"},
-                )
+        with tempfile.TemporaryDirectory() as temporary_directory, patch.object(
+            grader.subprocess, "run", return_value=process
+        ) as run_process:
+            match = grader._check_llm_judge(
+                Path(temporary_directory),
+                "response",
+                "post-state",
+                {"category": "quality", "prompt": "Is it good?"},
+            )
 
         self.assertTrue(match.matched)
         self.assertEqual(match.grader, "llm")
@@ -418,9 +417,8 @@ class GraderTests(unittest.TestCase):
 
             with patch.object(
                 sys, "argv", [*base_arguments, "--dry-run", "--llm-judge"]
-            ):
-                with patch("sys.stderr") as standard_error:
-                    grader.main()
+            ), patch("sys.stderr") as standard_error:
+                grader.main()
             dry_output = "".join(
                 call.args[0] for call in standard_error.write.call_args_list
             )
@@ -437,19 +435,19 @@ class GraderTests(unittest.TestCase):
                 "passed": True,
                 "failure_reason": None,
             }
-            with patch.object(sys, "argv", base_arguments):
-                with patch.object(grader, "grade_unit", return_value=successful_record):
-                    grader.main()
+            with patch.object(sys, "argv", base_arguments), patch.object(
+                grader, "grade_unit", return_value=successful_record
+            ):
+                grader.main()
             summary_document = json.loads(
                 (responses_directory / "grading_summary.json").read_text()
             )
             self.assertEqual(summary_document["summary"]["total_units_graded"], 1)
 
-            with patch.object(sys, "argv", base_arguments):
-                with patch.object(
-                    grader, "grade_unit", side_effect=RuntimeError("boom")
-                ):
-                    grader.main()
+            with patch.object(sys, "argv", base_arguments), patch.object(
+                grader, "grade_unit", side_effect=RuntimeError("boom")
+            ):
+                grader.main()
             failure_document = json.loads(
                 (responses_directory / "grading_summary.json").read_text()
             )
