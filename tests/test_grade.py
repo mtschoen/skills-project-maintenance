@@ -92,9 +92,10 @@ class GraderTests(unittest.TestCase):
             ),
             stderr="",
         )
-        with tempfile.TemporaryDirectory() as temporary_directory, patch.object(
-            grader.subprocess, "run", return_value=process
-        ) as run_process:
+        with (
+            tempfile.TemporaryDirectory() as temporary_directory,
+            patch.object(grader.subprocess, "run", return_value=process) as run_process,
+        ):
             match = grader._check_llm_judge(
                 Path(temporary_directory),
                 "response",
@@ -415,9 +416,12 @@ class GraderTests(unittest.TestCase):
                 "1",
             ]
 
-            with patch.object(
-                sys, "argv", [*base_arguments, "--dry-run", "--llm-judge"]
-            ), patch("sys.stderr") as standard_error:
+            with (
+                patch.object(
+                    sys, "argv", [*base_arguments, "--dry-run", "--llm-judge"]
+                ),
+                patch("sys.stderr") as standard_error,
+            ):
                 grader.main()
             dry_output = "".join(
                 call.args[0] for call in standard_error.write.call_args_list
@@ -435,8 +439,9 @@ class GraderTests(unittest.TestCase):
                 "passed": True,
                 "failure_reason": None,
             }
-            with patch.object(sys, "argv", base_arguments), patch.object(
-                grader, "grade_unit", return_value=successful_record
+            with (
+                patch.object(sys, "argv", base_arguments),
+                patch.object(grader, "grade_unit", return_value=successful_record),
             ):
                 grader.main()
             summary_document = json.loads(
@@ -444,8 +449,9 @@ class GraderTests(unittest.TestCase):
             )
             self.assertEqual(summary_document["summary"]["total_units_graded"], 1)
 
-            with patch.object(sys, "argv", base_arguments), patch.object(
-                grader, "grade_unit", side_effect=RuntimeError("boom")
+            with (
+                patch.object(sys, "argv", base_arguments),
+                patch.object(grader, "grade_unit", side_effect=RuntimeError("boom")),
             ):
                 grader.main()
             failure_document = json.loads(
