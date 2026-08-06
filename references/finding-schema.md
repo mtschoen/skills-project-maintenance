@@ -15,13 +15,13 @@ Every finding surfaced by this skill (whether to the user or back to a fleet par
 }
 ```
 
-project-tracker's `get_maintenance_checklist` returns partial findings — they will have `kind`, `what`, `path`, `evidence`, `recommendation`, `confidence`. The skill must fill in `rationale` and `action_on_approval` after researching.
+project-tracker's `get_maintenance_checklist` returns partial findings - they will have `kind`, `what`, `path`, `evidence`, `recommendation`, `confidence`. The skill must fill in `rationale` and `action_on_approval` after researching.
 
 Three recommendation values draw their `action_on_approval` from `references/cross-project-config.md`:
 
-- `migrate_to_agents` — establish AGENTS.md as the source of truth and/or rewrite `CLAUDE.md`/`GEMINI.md` to the `@AGENTS.md` import-pointer form (the weak-link upgrade is a sub-case).
-- `setup:<thing>` — scaffold a fleet-standard config the repo is missing: `setup:onsave_hook`, `setup:ci`, `setup:aislop`, `setup:agents_ignore`.
-- `untrack` — stop tracking a file that should never have been committed, keeping the working copy: `git rm --cached <path>` then commit. Used by `agents_settings_local_tracked` (`.agents/settings.local.json`). Distinct from `delete`, which removes the working file too.
+- `migrate_to_agents` - establish AGENTS.md as the source of truth and/or rewrite `CLAUDE.md`/`GEMINI.md` to the `@AGENTS.md` import-pointer form (the weak-link upgrade is a sub-case).
+- `setup:<thing>` - scaffold a fleet-standard config the repo is missing: `setup:onsave_hook`, `setup:ci`, `setup:aislop`, `setup:agents_ignore`.
+- `untrack` - stop tracking a file that should never have been committed, keeping the working copy: `git rm --cached <path>` then commit. Used by `agents_settings_local_tracked` (`.agents/settings.local.json`). Distinct from `delete`, which removes the working file too.
 
 ## Action log entry shape
 
@@ -32,6 +32,6 @@ Each entry appended to `automated` / `user_authorized` / `rejected`:
   "kind": "...",
   "action": "<short description>",
   "detail": "<file, command, or data touched>",
-  "reason": "<only for rejected — the user's stated reason or 'declined'>"
+  "reason": "<only for rejected - the user's stated reason or 'declined'>"
 }
 ```

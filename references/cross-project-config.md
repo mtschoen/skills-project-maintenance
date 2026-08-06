@@ -2,7 +2,7 @@
 
 The canonical *target shapes* for the fleet-wide conventions project-maintenance checks. When a
 project-tracker `get_maintenance_checklist` finding points here, use these as
-the draft you bring to the user — never apply straight to disk.
+the draft you bring to the user - never apply straight to disk.
 
 This list grows. **When a new cross-project convention is adopted, add its
 target shape here AND a detection check in project-tracker's checklist
@@ -18,16 +18,16 @@ Copilot, opencode, Amp, …). Tool-specific files are **thin import pointers**:
 
 - `CLAUDE.md` and `GEMINI.md` contain the import directive **`@AGENTS.md`**.
 - Claude Code and Gemini CLI **auto-expand `@`-imports into context** at launch
-  (relative path, max 4 hops). A plain markdown link — `See [AGENTS.md](AGENTS.md)`
-  — does **not** load; the guidance is then silently absent from most sessions.
+  (relative path, max 4 hops). A plain markdown link - `See [AGENTS.md](AGENTS.md)`
+  - does **not** load; the guidance is then silently absent from most sessions.
   That is why a linked pointer is flagged (`agents_pointer_weak_link`) for upgrade.
 - A symlink (`ln -s AGENTS.md CLAUDE.md`) is the upstream recommendation but is
-  sketchy on Windows — prefer the `@AGENTS.md` text pointer, which is
+  sketchy on Windows - prefer the `@AGENTS.md` text pointer, which is
   git-portable and cross-platform.
 
 ### Target shapes
 
-Bare pointer (the common case — nothing tool-specific):
+Bare pointer (the common case - nothing tool-specific):
 
 ```text
 @AGENTS.md
@@ -62,9 +62,9 @@ stale-after: 24h - safe to delete if reserved-at is older and the owning session
 Keep below the import line ONLY content that is meaningless to other agents:
 Claude Code hooks/settings paths, the `Skill` tool, `claude -p`, subagent
 `model:` routing, `~/.claude/...` locations. **Everything else is shared and
-belongs in AGENTS.md** — including quality-gate docs (aislop), build/test
+belongs in AGENTS.md** - including quality-gate docs (aislop), build/test
 commands, architecture notes, and coding conventions. A frequent mistake is
-leaving the aislop section in CLAUDE.md; it is not Claude-specific — move it.
+leaving the aislop section in CLAUDE.md; it is not Claude-specific - move it.
 
 ---
 
@@ -93,13 +93,13 @@ not supported in all agent harnesses. For claude code, add the following to
 ```
 
 Repos with an aislop gate add a second hook entry of the same shape that runs
-the pinned aislop binary. **Pin the aislop binary version in a hook — never
+the pinned aislop binary. **Pin the aislop binary version in a hook - never
 `@latest`** (a hook runs on every edit and `@latest` does a network check each
 time). Tailor the `case` arms to the repo's actual languages.
 
 ---
 
-## CI (`.gitea/workflows/` — Gitea Actions)
+## CI (`.gitea/workflows/` - Gitea Actions)
 
 Automates the validate tier (lint + format check + tests) so regressions block
 at merge. Minimal lint skeleton:
@@ -135,10 +135,10 @@ exclude:
   - "*/workspace/**"     # generated / fixture trees
 ```
 
-CI step (pin a version, NOT `@latest`): `npx --yes aislop@<ver> ci .` — use the
+CI step (pin a version, NOT `@latest`): `npx --yes aislop@<ver> ci .` - use the
 CLI on Gitea Actions, not the GitHub composite action. Known Python false
 positive: `ai-slop/unused-import` fires on `from __future__ import annotations`
-(do NOT remove that line). aislop scores the **whole repo** — there is no
+(do NOT remove that line). aislop scores the **whole repo** - there is no
 diff-only mode.
 
 ---
@@ -187,6 +187,6 @@ Two distinct findings draw from this section, using Claude Code as an example:
 
 ## Full detail
 
-- A repo's own `LINTER-SETUP.md` — the per-repo survey output, when present.
+- A repo's own `LINTER-SETUP.md` - the per-repo survey output, when present.
 - The aislop section of the user's global `AGENTS.md` - install rules and the
   pinned version.
