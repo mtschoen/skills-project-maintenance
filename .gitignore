@@ -10,9 +10,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# aislop runtime artifacts (the umbrella on-save hook fires on submodule edits too).
-# Keep only a config if one is added later.
-
 # aislop runtime artifacts (session/history logs, caches, baselines).
 # Unanchored so nested project directories are covered too.
 **/.aislop/*
