@@ -417,7 +417,7 @@ class GraderTests(unittest.TestCase):
             ]
 
             with patch.object(
-                sys, "argv", base_arguments + ["--dry-run", "--llm-judge"]
+                sys, "argv", [*base_arguments, "--dry-run", "--llm-judge"]
             ):
                 with patch("sys.stderr") as standard_error:
                     grader.main()

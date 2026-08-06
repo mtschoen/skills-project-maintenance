@@ -41,7 +41,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-
 AGENT_PROMPT_TEMPLATE = """{skill_section}You are a subagent in a fleet maintenance sweep run by an orchestrator. You have been dispatched to run a maintenance pass on the repository at your current directory. You have full filesystem access here via Read, Grep, Glob, Edit, Write, and Bash.
 
 ## Brief from the orchestrator
